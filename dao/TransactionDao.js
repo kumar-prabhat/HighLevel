@@ -9,7 +9,12 @@ class TransactionDao {
     this.session = _session ?? null;
   }
 
-  async getByWalletId(walletId, sort = {}, limit = 10, skip = 0) {
+  async getByWalletId(
+    walletId,
+    sort = { createdAt: -1 },
+    limit = 10,
+    skip = 0
+  ) {
     return new Promise((resolve, reject) => {
       Transaction.find({ walletId })
         .sort({ ...sort })

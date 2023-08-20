@@ -13,4 +13,9 @@ const addTransaction = async (id, data) => {
   return res?.data;
 };
 
-export { getTransactionsByWalletId, addTransaction };
+const downloadTransactions = async (walletId) => {
+  const res = await axios.get(`${BASE_URL}/transaction/download/${walletId}`);
+  return res?.data;
+};
+
+export { getTransactionsByWalletId, addTransaction, downloadTransactions };

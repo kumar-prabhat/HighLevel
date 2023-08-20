@@ -1,12 +1,13 @@
 :root {
   --primary-color: #17a2b8;
   --dark-color: #343a40;
- 
+
 }
 
 body {
-    background-color: #e7e7e7;
+  background-color: #e7e7e7;
 }
+
 .navbar {
   display: flex;
   justify-content: start;
@@ -20,7 +21,7 @@ body {
   opacity: 0.9;
 }
 
-.navbar h1{
+.navbar h1 {
   width: 40%;
 }
 
@@ -62,19 +63,20 @@ body {
 /* Pagination */
 .paginationContainer {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: start;
   width: 38%;
   margin: 0 auto;
 }
 
 #filled-hidden-label-normal {
-  width: 20% !important
+  width: 40px;
+  font-size: 16px;
 }
 
 .totalValue {
   margin: 0 1rem;
-  width: 30%;
+  width: 10%;
 }
 
 .controls {
@@ -95,4 +97,8 @@ body {
   border-radius: 5px;
 }
 
-
+.loader {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}

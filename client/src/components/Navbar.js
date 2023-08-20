@@ -7,9 +7,10 @@ const Navbar = () => {
         <Link to="/">HighLevel</Link>
       </h1>
       <div>
-        <span className="mr-2">
+        <span>
           <Link to="/wallet">Wallet</Link>
         </span>
+        <span style={{ color: "white" }}>{" | "}</span>
         <span>
           <Link to="/transactions">Transactions</Link>
         </span>

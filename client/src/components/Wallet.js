@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { addTransaction } from "../managers/TransactionManager";
 import { getWallet, initializeWallet } from "../managers/WalletManager";
 import "../styles/Wallet.css";
+import { numberPrecision } from "../utils/NumberPrecision";
 
 const Wallet = () => {
   const [state, setState] = useState({ name: "", balance: null });
@@ -34,15 +35,17 @@ const Wallet = () => {
     setLoading(true);
     const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
     const result = await addTransaction(walletId, transaction);
-    if (result.status == "200") {
+    if (result.statusCode === 200) {
       const walletData = await getWallet(walletId);
-      if (walletData.status == "200") {
-        localStorage.setItem("walletData", JSON.stringify(walletData?.result));
-        setWallet(walletData?.result);
+      if (walletData.statusCode === 200) {
+        localStorage.setItem("walletData", JSON.stringify(walletData?.data));
+        setWallet(walletData?.data);
       }
-      alert("Transaction added successfully");
+      alert("Transaction created successfully");
       setTransaction({ amount: null, description: "", transactionType: "" });
       setLoading(false);
+    } else {
+      alert("Transaction creation");
     }
   };
   const handleSubmit = async () => {
@@ -50,17 +53,22 @@ const Wallet = () => {
       alert("Name field is required");
       return;
     }
-    if (state.balance <= 0) {
+    if (numberPrecision(state.balance) <= 0) {
       alert("Amount can not be negative or zero");
       return;
     }
     setLoading(true);
-    const result = await initializeWallet({ ...state });
-    if (result.status == "200") {
-      localStorage.setItem("walletData", JSON.stringify(result?.result));
-      setWallet(result?.result);
+    const result = await initializeWallet({
+      ...state,
+      balance: numberPrecision(state.balance),
+    });
+    if (result.statusCode === 200) {
+      localStorage.setItem("walletData", JSON.stringify(result?.data));
+      setWallet(result?.data);
       alert("Wallet initiated successfully");
       setLoading(false);
+    } else {
+      alert("Wallet initiation failed");
     }
   };
 
@@ -101,7 +109,7 @@ const Wallet = () => {
               <label for="balance">Balance:</label>
               <input
                 id="balance"
-                value={wallet?.balance}
+                value={numberPrecision(wallet?.balance)}
                 readOnly
                 className="readOnly"
               />
@@ -114,7 +122,7 @@ const Wallet = () => {
               name="amount"
               type="number"
               min={0}
-              value={transaction?.amount}
+              value={numberPrecision(transaction?.amount)}
               onChange={setTransactionData}
             />
             <input
@@ -180,7 +188,7 @@ const Wallet = () => {
               name="balance"
               type="number"
               min={0}
-              value={state.balance}
+              value={numberPrecision(state.balance)}
               onChange={setWalletData}
             />
           </div>

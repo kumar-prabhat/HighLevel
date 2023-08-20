@@ -1,27 +1,44 @@
 import { useEffect, useState } from "react";
-import { getTransactionsByWalletId } from "../managers/TransactionManager";
+import {
+  getTransactionsByWalletId,
+  downloadTransactions,
+} from "../managers/TransactionManager";
 import "../styles/Transaction.css";
 import Pagination from "./Pagination";
+import { downloadHandler } from "../utils/FileUtils";
+import { numberPrecision } from "../utils/NumberPrecision";
 const Transaction = () => {
   const [transactionData, setTransactionData] = useState([]);
   const [count, setCount] = useState(0);
-  const [reset, setReset] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [downloadDisabled, setDownloadDisabled] = useState(false);
   const [filter, setFilter] = useState({
     sort: null,
     limit: 5,
     skip: 0,
   });
   const fetchTransactionData = async () => {
-    setLoading(true);
-    setReset(false);
     const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
     const result = await getTransactionsByWalletId(walletId, filter);
-    if (result.status == "200") {
-      setTransactionData(result?.result?.transactions);
-      setCount(result?.result?.transactionsCount);
+    if (result.statusCode === 200) {
+      setTransactionData(result?.data?.transactions);
+      setCount(result?.data?.transactionsCount);
+      setLoading(false);
+    } else {
+      alert(result?.message);
     }
-    setLoading(false);
+  };
+
+  const download = async () => {
+    setDownloadDisabled(true);
+    const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
+    const result = await downloadTransactions(walletId);
+    if (result.statusCode === 200) {
+      downloadHandler(result?.data?.attachment, result?.data?.name);
+    } else {
+      alert("Something went wront! Download failed!");
+    }
+    setDownloadDisabled(false);
   };
 
   const handleSort = async (e) => {
@@ -32,46 +49,78 @@ const Transaction = () => {
   useEffect(() => {
     fetchTransactionData();
   }, [filter]);
-  if (loading) return <div>loading...</div>;
   return (
     <div>
       <h5 className="form-step"> Transactions Data </h5>
-      <label for="sort">Sort the transactions: </label>
-      <select name="sort" id="sort" onChange={handleSort} value={filter?.sort}>
-        <option value="createdAt" selected={filter?.sort === "createdAt"}>
-          Date
-        </option>
-        <option value="amount" selected={filter?.sort === "amount"}>
-          Amount
-        </option>
-      </select>
-      <table id="transactions">
-        <tr>
-          <th>Description</th>
-          <th>Amount</th>
-          <th>Balance</th>
-          <th>Transaction Type</th>
-          <th>Date</th>
-        </tr>
-        {transactionData?.length &&
-          transactionData?.map((item, i) => (
-            <tr key={i}>
-              <td>{item.description}</td>
-              <td>{item.amount}</td>
-              <td>{item.balance}</td>
-              <td>{item.transactionType}</td>
-              <td>{new Date(item.createdAt).toLocaleDateString("en-GB")}</td>
-            </tr>
-          ))}
-      </table>
-      <Pagination
-        handleChange={(skip, limit) => {
-          setFilter({ ...filter, limit, skip });
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
-        reset={reset}
-        total={count}
-        limit={5}
-      />
+      >
+        <div>
+          <label for="sort">Sort by: </label>
+          <select
+            name="sort"
+            id="sort"
+            onChange={handleSort}
+            value={filter?.sort}
+          >
+            <option value="createdAt" selected={filter?.sort === "createdAt"}>
+              Date
+            </option>
+            <option value="amount" selected={filter?.sort === "amount"}>
+              Amount
+            </option>
+          </select>
+        </div>
+        <div>
+          <button
+            className="btn btn-primary"
+            onClick={download}
+            disabled={downloadDisabled}
+          >
+            Download Transactions
+          </button>
+        </div>
+      </div>
+      {loading ? (
+        <div className="loader">Loading...</div>
+      ) : (
+        <>
+          <table style={{ marginTop: "16px" }} id="transactions">
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Balance</th>
+              <th>Transaction Type</th>
+              <th>Date</th>
+            </tr>
+            {transactionData?.length &&
+              transactionData?.map((item, i) => (
+                <tr key={i}>
+                  <td>{item.description}</td>
+                  <td>{numberPrecision(item.amount)}</td>
+                  <td>{numberPrecision(item.balance)}</td>
+                  <td>{item.transactionType}</td>
+                  <td>
+                    {new Date(item.createdAt).toLocaleDateString("en-GB")}
+                  </td>
+                </tr>
+              ))}
+          </table>
+          {count > 5 && (
+            <Pagination
+              handleChange={(skip, limit) => {
+                setFilter({ ...filter, limit, skip });
+              }}
+              total={count}
+              limit={5}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };
