@@ -2,7 +2,7 @@
   "name": "highlevel",
   "version": "1.0.0",
   "description": "An app for Wallet System",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server",
     "server": "nodemon server",
