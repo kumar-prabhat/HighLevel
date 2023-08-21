@@ -94,7 +94,9 @@ Add you wallet and perform transaction, check all transactions and download them
    }
 
 4. Fetch all transactions
+
    Pagination and Sorting also included in this api
+
    GET - /transactions/:walletId?filter={sort:null,limit:5,skip:5}
 
    Params: walletId
