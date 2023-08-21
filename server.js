@@ -37,8 +37,8 @@ if (process.env.NODE_ENV === "production") {
 /** Server listen and database connection */
 const start = async () => {
   await DBService.getConnection();
-  app.listen(Config.SERVER_PORT, () => {
-    console.info(`Server running on port ${Config.SERVER_PORT}`);
+  app.listen(Config.PORT, () => {
+    console.info(`Server running on port ${Config.PORT}`);
   });
 };
 start();

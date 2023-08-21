@@ -1,11 +1,11 @@
 const dotenv = require("dotenv");
 
 dotenv.config();
-const SERVER_PORT = process.env.SERVER_PORT || 8000;
+const PORT = process.env.PORT || 8000;
 const MONGODB_URL = process.env.MONGODB_URL || "";
 
 const Config = {
-  SERVER_PORT,
+  PORT,
   MONGODB_URL,
 };
 
