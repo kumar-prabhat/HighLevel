@@ -1,11 +1,12 @@
 # HighLevel
 
-#Wallet System
+# Wallet System
+
 Add you wallet and perform transaction, check all transactions and download them as CSV
 
-App deployed in heroku - https://wallet-system-high-level-ca2da79447b7.herokuapp.com/
+# App deployed in heroku - https://wallet-system-high-level-ca2da79447b7.herokuapp.com/
 
-Steps to run in local -
+# Steps to run in local -
 
 1. Clone the project from github
 2. cd to HighLevel folder
@@ -15,9 +16,10 @@ Steps to run in local -
 6. come back to Highlevel folder
 7. npm run dev
 
-#APIs:
+# APIs:
 
 1. Setup wallet
+
    POST - /setup
 
    Request - {
@@ -41,7 +43,9 @@ Steps to run in local -
    }
 
 2. Fetch Wallet Details
+
    GET - /wallet/:walletId
+
    Params: walletId
 
    Response - {
@@ -60,7 +64,9 @@ Steps to run in local -
    }
 
 3. Create Transaction
+
    POST - /transact/:walletId
+
    Params: walletId
 
    Request - {
@@ -88,7 +94,9 @@ Steps to run in local -
    }
 
 4. Fetch all transactions
+
    GET - /transactions/:walletId
+
    Params: walletId
 
    Response - {
@@ -125,6 +133,9 @@ Steps to run in local -
    }
 
 5. Download Trsanctions
+
    GET - /transaction/download/:walletId
+
    Params: walletId
+
    Response - CSV filw will be downloaded with all transactions data
