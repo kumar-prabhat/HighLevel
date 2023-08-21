@@ -1,3 +1,3 @@
 # HighLevel
 
-TODO: Error handling, Deployment, Documentation
+TODO: Deployment, Documentation
