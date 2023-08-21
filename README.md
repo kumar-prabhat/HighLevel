@@ -2,9 +2,16 @@
 
 # Wallet System
 
-Add you wallet and perform transaction, check all transactions and download them as CSV
+Add your wallet and perform transaction, check all transactions and download them as CSV
 
 # App deployed in heroku - https://wallet-system-high-level-ca2da79447b7.herokuapp.com/
+
+# Stacks Used-
+
+Database - Mongodb
+Backend - NodeJs
+Framework - ExpressJs
+Frontend - ReactJs
 
 # Steps to run in local -
 
