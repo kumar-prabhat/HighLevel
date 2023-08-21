@@ -58,78 +58,88 @@ const Transaction = () => {
   return (
     <div>
       <h5 className="form-step"> Transactions Data </h5>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <label for="sort">Sort by: </label>
-          <select
-            name="sort"
-            id="sort"
-            onChange={handleSort}
-            value={filter?.sort}
-          >
-            <option value="createdAt" selected={filter?.sort === "createdAt"}>
-              Date
-            </option>
-            <option value="amount" selected={filter?.sort === "amount"}>
-              Amount
-            </option>
-          </select>
-        </div>
-        <div>
-          <button
-            className="btn btn-primary"
-            onClick={download}
-            disabled={downloadDisabled}
-          >
-            Download Transactions
-          </button>
-        </div>
-      </div>
-      {loading ? (
-        <div className="loader">Loading...</div>
-      ) : (
+      {transactionData?.length ? (
         <>
-          <table style={{ marginTop: "16px" }} id="transactions">
-            <tr>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Balance</th>
-              <th>Transaction Type</th>
-              <th>Date</th>
-            </tr>
-            {transactionData?.length &&
-              transactionData?.map((item, i) => (
-                <tr key={i}>
-                  <td>{item.description}</td>
-                  <td>{numberPrecision(item.amount)}</td>
-                  <td>{numberPrecision(item.balance)}</td>
-                  <td>
-                    {item.transactionTyp && item.transactionType === "CREDIT"
-                      ? "Credit"
-                      : "Debit"}
-                  </td>
-                  <td>
-                    {new Date(item.createdAt).toLocaleDateString("en-GB")}
-                  </td>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <label for="sort">Sort by: </label>
+              <select
+                name="sort"
+                id="sort"
+                onChange={handleSort}
+                value={filter?.sort}
+              >
+                <option
+                  value="createdAt"
+                  selected={filter?.sort === "createdAt"}
+                >
+                  Date
+                </option>
+                <option value="amount" selected={filter?.sort === "amount"}>
+                  Amount
+                </option>
+              </select>
+            </div>
+            <div>
+              <button
+                className="btn btn-primary"
+                onClick={download}
+                disabled={downloadDisabled}
+              >
+                Download Transactions
+              </button>
+            </div>
+          </div>
+          {loading ? (
+            <div className="loader">Loading...</div>
+          ) : (
+            <>
+              <table style={{ marginTop: "16px" }} id="transactions">
+                <tr>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Balance</th>
+                  <th>Transaction Type</th>
+                  <th>Date</th>
                 </tr>
-              ))}
-          </table>
-          {count > 5 && (
-            <Pagination
-              handleChange={(skip, limit) => {
-                setFilter({ ...filter, limit, skip });
-              }}
-              total={count}
-              limit={5}
-            />
+                {transactionData?.length &&
+                  transactionData?.map((item, i) => (
+                    <tr key={i}>
+                      <td>{item.description}</td>
+                      <td>{numberPrecision(item.amount)}</td>
+                      <td>{numberPrecision(item.balance)}</td>
+                      <td>
+                        {item.transactionTyp &&
+                        item.transactionType === "CREDIT"
+                          ? "Credit"
+                          : "Debit"}
+                      </td>
+                      <td>
+                        {new Date(item.createdAt).toLocaleDateString("en-GB")}
+                      </td>
+                    </tr>
+                  ))}
+              </table>
+              {count > 5 && (
+                <Pagination
+                  handleChange={(skip, limit) => {
+                    setFilter({ ...filter, limit, skip });
+                  }}
+                  total={count}
+                  limit={5}
+                />
+              )}
+            </>
           )}
         </>
+      ) : (
+        <div className="loader">No data found</div>
       )}
     </div>
   );
