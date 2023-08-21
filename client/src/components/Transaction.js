@@ -7,6 +7,7 @@ import "../styles/Transaction.css";
 import Pagination from "./Pagination";
 import { downloadHandler } from "../utils/FileUtils";
 import { numberPrecision } from "../utils/NumberPrecision";
+import { toast } from "react-toastify";
 const Transaction = () => {
   const [transactionData, setTransactionData] = useState([]);
   const [count, setCount] = useState(0);
@@ -18,27 +19,32 @@ const Transaction = () => {
     skip: 0,
   });
   const fetchTransactionData = async () => {
-    const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
-    const result = await getTransactionsByWalletId(walletId, filter);
-    if (result.statusCode === 200) {
-      setTransactionData(result?.data?.transactions);
-      setCount(result?.data?.transactionsCount);
-      setLoading(false);
-    } else {
-      alert(result?.message);
+    try {
+      const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
+      const result = await getTransactionsByWalletId(walletId, filter);
+      if (result.statusCode === 200) {
+        setTransactionData(result?.data?.transactions);
+        setCount(result?.data?.transactionsCount);
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error(error?.message);
     }
   };
 
   const download = async () => {
-    setDownloadDisabled(true);
-    const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
-    const result = await downloadTransactions(walletId);
-    if (result.statusCode === 200) {
-      downloadHandler(result?.data?.attachment, result?.data?.name);
-    } else {
-      alert("Something went wront! Download failed!");
+    try {
+      setDownloadDisabled(true);
+      const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
+      const result = await downloadTransactions(walletId);
+      if (result.statusCode === 200) {
+        downloadHandler(result?.data?.attachment, result?.data?.name);
+      }
+    } catch (error) {
+      toast.error("Something went wront! Download failed!");
+    } finally {
+      setDownloadDisabled(false);
     }
-    setDownloadDisabled(false);
   };
 
   const handleSort = async (e) => {
@@ -103,7 +109,11 @@ const Transaction = () => {
                   <td>{item.description}</td>
                   <td>{numberPrecision(item.amount)}</td>
                   <td>{numberPrecision(item.balance)}</td>
-                  <td>{item.transactionType}</td>
+                  <td>
+                    {item.transactionTyp && item.transactionType === "CREDIT"
+                      ? "Credit"
+                      : "Debit"}
+                  </td>
                   <td>
                     {new Date(item.createdAt).toLocaleDateString("en-GB")}
                   </td>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { addTransaction } from "../managers/TransactionManager";
 import { getWallet, initializeWallet } from "../managers/WalletManager";
 import "../styles/Wallet.css";
@@ -19,56 +20,62 @@ const Wallet = () => {
   const navigate = useNavigate();
   const handleTransaction = async () => {
     if (transaction.amount <= 0) {
-      alert("Amount can not be negative or zero");
+      toast.error("Amount can not be negative or zero");
       return;
     }
 
     if (transaction.description == "") {
-      alert("Description field is required");
+      toast.error("Description field is required");
       return;
     }
 
     if (transaction.transactionType == "") {
-      alert("Transaction Type field is required");
+      toast.error("Transaction Type field is required");
       return;
     }
     setLoading(true);
-    const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
-    const result = await addTransaction(walletId, transaction);
-    if (result.statusCode === 200) {
-      const walletData = await getWallet(walletId);
-      if (walletData.statusCode === 200) {
-        localStorage.setItem("walletData", JSON.stringify(walletData?.data));
-        setWallet(walletData?.data);
+    try {
+      const walletId = JSON.parse(localStorage.getItem("walletData"))?._id;
+      const result = await addTransaction(walletId, transaction);
+      if (result.statusCode === 200) {
+        const walletData = await getWallet(walletId);
+        if (walletData.statusCode === 200) {
+          localStorage.setItem("walletData", JSON.stringify(walletData?.data));
+          setWallet(walletData?.data);
+        }
+        toast.success("Transaction created successfully");
+        setTransaction({ amount: null, description: "", transactionType: "" });
       }
-      alert("Transaction created successfully");
-      setTransaction({ amount: null, description: "", transactionType: "" });
+    } catch (error) {
+      toast.error("Transaction creation failed");
+    } finally {
       setLoading(false);
-    } else {
-      alert("Transaction creation");
     }
   };
   const handleSubmit = async () => {
     if (state.name == "") {
-      alert("Name field is required");
+      toast.error("Name field is required");
       return;
     }
     if (numberPrecision(state.balance) <= 0) {
-      alert("Amount can not be negative or zero");
+      toast.error("Amount can not be negative or zero");
       return;
     }
     setLoading(true);
-    const result = await initializeWallet({
-      ...state,
-      balance: numberPrecision(state.balance),
-    });
-    if (result.statusCode === 200) {
-      localStorage.setItem("walletData", JSON.stringify(result?.data));
-      setWallet(result?.data);
-      alert("Wallet initiated successfully");
+    try {
+      const result = await initializeWallet({
+        ...state,
+        balance: numberPrecision(state.balance),
+      });
+      if (result.statusCode === 200) {
+        localStorage.setItem("walletData", JSON.stringify(result?.data));
+        setWallet(result?.data);
+        toast.success("Wallet initiated successfully");
+      }
+    } catch (error) {
+      toast.error("Wallet initiation failed");
+    } finally {
       setLoading(false);
-    } else {
-      alert("Wallet initiation failed");
     }
   };
 
@@ -88,7 +95,7 @@ const Wallet = () => {
     setTransaction({ ...transaction, transactionType: e.currentTarget.value });
   };
   useEffect(() => {}, [wallet]);
-  if (loading) return <div>loading...</div>;
+  if (loading) return <div className="loader">Loading...</div>;
 
   return (
     <>
@@ -164,7 +171,7 @@ const Wallet = () => {
             </div>
           </div>
           <button className="btn btn-primary" onClick={handleTransaction}>
-            Add Transaction
+            Create Transaction
           </button>
           <button
             className="btn btn-primary"
