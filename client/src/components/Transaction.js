@@ -4,7 +4,7 @@ import {
   downloadTransactions,
 } from "../managers/TransactionManager";
 import "../styles/Transaction.css";
-import Pagination from "./Pagination";
+import Pagination from "./common/Pagination";
 import { downloadHandler } from "../utils/FileUtils";
 import { numberPrecision } from "../utils/NumberPrecision";
 import { toast } from "react-toastify";
